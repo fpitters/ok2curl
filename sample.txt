@@ -1,0 +1,9 @@
+D/OkHttp: --> GET http://fpitters.com/api/v1/dummy h2
+D/OkHttp: Authorization: Bearer TOKEN
+D/OkHttp: custom-header: XXX
+D/OkHttp: User-Agent: Dalvik/2.1.0 (Linux; U; Android 11; KB2003 Build/RP1A.201005.001)
+D/OkHttp: Host: ai.sumo.tv2.no
+D/OkHttp: Connection: Keep-Alive
+D/OkHttp: Accept-Encoding: gzip
+D/OkHttp: If-Modified-Since: Mon, 01 Feb 2021 12:54:51 GMT
+D/OkHttp: --> END GET
