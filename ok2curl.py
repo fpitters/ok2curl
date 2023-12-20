@@ -5,11 +5,13 @@ import fileinput
 from dataclasses import dataclass, field
 from typing import List, ClassVar
 
+
 @dataclass
 class Header:
     """Header model"""
     key: str
     value: str
+
 
 @dataclass
 class Request:
@@ -20,19 +22,21 @@ class Request:
     data: str = None
     headers: list = field(default_factory=list)
 
-    EXCLUDED_HEADERS: ClassVar[list] = ['Accept-Encoding']
+    EXCLUDED_HEADERS: ClassVar[list] = ['Accept-Encoding', 'Cookie'] #['Cookie', 'Accept-Encoding']
 
     def curl(self):
         h = ' '.join([f'-H "{header.key}: {header.value}"' for header in self.headers if header.key not in Request.EXCLUDED_HEADERS])
         if not self.is_data:
-            return f'curl -i -X {self.method} {h} "{self.url}"'
+            return f'curl -X {self.method} {h} "{self.url}"'
         else:
-            return f'curl -i -X {self.method} --data \'{self.data}\' {h} "{self.url}"'
+            return f'curl -X {self.method} --data \'{self.data}\' {h} "{self.url}"'
+
 
 def parseFile(file):
+    request = None
     pattern_json = '^[{\[].*[}\]]$'
     for line in fileinput.input(file):
-        logs = line.split('D/OkHttp: ')
+        logs = re.split('okhttp\\.OkHttpClient.*I\\s\\s', line) # line.split('OkHttpClient : ')
         if len(logs) > 1:
             log = logs[1].strip()
             if log.startswith('-->'):
@@ -42,7 +46,7 @@ def parseFile(file):
                     if request == None:
                         print('Invalid end of request reached without any request')
                     else:
-                        print('>>> Curl command is:')
+                        print('>>> Curl command:')
                         print(request.curl())
                         request = None
                 else:
@@ -64,6 +68,7 @@ def parseFile(file):
         print('>>> Incomplete request:')
         print(request.curl())
         request = None
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Parse OkHttp logs')
